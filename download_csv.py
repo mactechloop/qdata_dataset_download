@@ -35,7 +35,8 @@ st.title('Download Dataset Qdata')
 
 
 activities=['SENSORY EVALUATION','IMPACT OF HIGH FOOD COST ON BMI','FOOD CONSUMPTION PATTERN OF ADMINISTRATIVE STAFF OF AAU',
-                'FOOD ACCESS (WEIGHED FOOD INTAKE)', 'FOOD ACCESS (FFQ)', 'FOOD ACCESS (24 RECALL)', 'DIETARY DIVERSITY OF WOMEN']
+                'FOOD ACCESS (WEIGHED FOOD INTAKE)', 'FOOD ACCESS (FFQ)', 'FOOD ACCESS (24 RECALL)', 'DIETARY DIVERSITY OF WOMEN',
+                'ANTHROPOMETRIC STATUS OF SUBJECTS RESPONDENTS']
 option=st.selectbox('Selection option:',activities)
 
 if(option == 'SENSORY EVALUATION'):
@@ -364,3 +365,37 @@ elif(option == 'DIETARY DIVERSITY OF WOMEN'):
         )):
                 st.success('Downloaded Successfully')
     
+elif(option == 'ANTHROPOMETRIC STATUS OF SUBJECTS RESPONDENTS'):
+    user_id = st.text_input('User Id')
+    unique_id = st.text_input('Unique Id')
+
+    if(st.button('Proceed')):
+        ref2 = db.reference("/Users/" + user_id +"/Questionnaires/" + unique_id + "/CollectedData/")
+        my_json = ref2.get()
+
+        with open('data.json', 'w') as json_file:
+            json.dump(my_json, json_file)
+
+        json_file = open("data.json")
+        dic = json.load(json_file)
+        print(dic)
+
+        arr = []
+
+        for item in dic:
+            arr.append(dic[item])
+
+        jsonString = json.dumps(arr)
+
+        df = pd.read_json(jsonString)
+        aaaa = convert_df(df)
+
+        file_name = 'Qdata'+'('+unique_id+').csv'
+
+        if(st.download_button(
+            label="Download CSV File",
+            data=aaaa,
+            file_name=file_name,
+            mime='text/csv',
+        )):
+                st.success('Downloaded Successfully')
