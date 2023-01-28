@@ -15,6 +15,13 @@ def convert_df(df):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     return df.to_csv(index=False).encode('utf-8')
 
+@st.cache
+def convert_df1(df, ftr):
+    # IMPORTANT: Cache the conversion to prevent computation on every rerun
+    df.replace(ftr, inplace=True)
+    return df.to_csv(index=False).encode('utf-8')
+
+
 def listToString(s):
 
     str1 = ""
@@ -34,9 +41,7 @@ st.title('Download Dataset Qdata')
 
 
 
-activities=['SENSORY EVALUATION','IMPACT OF HIGH FOOD COST ON BMI','FOOD CONSUMPTION PATTERN OF ADMINISTRATIVE STAFF OF AAU',
-                'FOOD ACCESS (WEIGHED FOOD INTAKE)', 'FOOD ACCESS (FFQ)', 'FOOD ACCESS (24 RECALL)', 'DIETARY DIVERSITY OF WOMEN',
-                'ANTHROPOMETRIC STATUS OF SUBJECTS RESPONDENTS']
+activities=['SENSORY EVALUATION', 'ANY OTHER', 'REPLACE ALPHABETS']
 option=st.selectbox('Selection option:',activities)
 
 if(option == 'SENSORY EVALUATION'):
@@ -118,7 +123,7 @@ if(option == 'SENSORY EVALUATION'):
             st.success('Downloaded Successfully')
 
 
-elif(option == 'IMPACT OF HIGH FOOD COST ON BMI'):
+elif(option == 'ANY OTHER'):
 
     user_id = st.text_input('User Id')
     unique_id = st.text_input('Unique Id')
@@ -154,248 +159,38 @@ elif(option == 'IMPACT OF HIGH FOOD COST ON BMI'):
         )):
                 st.success('Downloaded Successfully')
 
-elif(option == 'FOOD CONSUMPTION PATTERN OF ADMINISTRATIVE STAFF OF AAU'):
-    user_id = st.text_input('User Id')
-    unique_id = st.text_input('Unique Id')
+elif option == 'REPLACE ALPHABETS':
+    uploadedFile = st.file_uploader('datasetqdata', type=['csv','xlsx'],accept_multiple_files=False,key="fileUploader")
+    try:
+        try:
+            df=pd.read_csv(uploadedFile, error_bad_lines=True, warn_bad_lines=False)
+        except:
+            try:
+                df = pd.read_excel(uploadedFile)
+            except:      
+                df=pd.DataFrame()
 
-    if(st.button('Proceed')):
-        ref2 = db.reference("/Users/" + user_id +"/Questionnaires/" + unique_id + "/CollectedData/")
-        my_json = ref2.get()
+        ftr = {
+            'A' : 1,
+            'B' : 2,
+            'C' : 3,
+            'D' : 4,
+            'E' : 5,
+            'F' : 6
+        }
 
-        with open('data.json', 'w') as json_file:
-            json.dump(my_json, json_file)
+        aa = convert_df1(df, ftr)
+        # aa.replace(ftr, inplace=True)
 
-        json_file = open("data.json")
-        dic = json.load(json_file)
-        print(dic)
-
-        arr = []
-
-        for item in dic:
-            arr.append(dic[item])
-
-        jsonString = json.dumps(arr)
-
-        df = pd.read_json(jsonString)
-        aaaa = convert_df(df)
-
-        file_name = 'Qdata'+'('+unique_id+').csv'
+        file_name = 'Qdata'+'('+uploadedFile.name[:-4].strip()+').csv'
 
         if(st.download_button(
             label="Download CSV File",
-            data=aaaa,
+            data=aa,
             file_name=file_name,
             mime='text/csv',
         )):
                 st.success('Downloaded Successfully')
 
-elif(option == 'IMPACT OF HIGH FOOD COST ON BMI'):
-
-    user_id = st.text_input('User Id')
-    unique_id = st.text_input('Unique Id')
-
-    if(st.button('Proceed')):
-        ref2 = db.reference("/Users/" + user_id +"/Questionnaires/" + unique_id + "/CollectedData/")
-        my_json = ref2.get()
-
-        with open('data.json', 'w') as json_file:
-            json.dump(my_json, json_file)
-
-        json_file = open("data.json")
-        dic = json.load(json_file)
-        print(dic)
-
-        arr = []
-
-        for item in dic:
-            arr.append(dic[item])
-
-        jsonString = json.dumps(arr)
-
-        df = pd.read_json(jsonString)
-        aaaa = convert_df(df)
-
-        file_name = 'Qdata'+'('+unique_id+').csv'
-
-        if(st.download_button(
-            label="Download CSV File",
-            data=aaaa,
-            file_name=file_name,
-            mime='text/csv',
-        )):
-                st.success('Downloaded Successfully')
-
-elif(option == 'FOOD ACCESS (WEIGHED FOOD INTAKE)'):
-    user_id = st.text_input('User Id')
-    unique_id = st.text_input('Unique Id')
-
-    if(st.button('Proceed')):
-        ref2 = db.reference("/Users/" + user_id +"/Questionnaires/" + unique_id + "/CollectedData/")
-        my_json = ref2.get()
-
-        with open('data.json', 'w') as json_file:
-            json.dump(my_json, json_file)
-
-        json_file = open("data.json")
-        dic = json.load(json_file)
-        print(dic)
-
-        arr = []
-
-        for item in dic:
-            arr.append(dic[item])
-
-        jsonString = json.dumps(arr)
-
-        df = pd.read_json(jsonString)
-        aaaa = convert_df(df)
-
-        file_name = 'Qdata'+'('+unique_id+').csv'
-
-        if(st.download_button(
-            label="Download CSV File",
-            data=aaaa,
-            file_name=file_name,
-            mime='text/csv',
-        )):
-                st.success('Downloaded Successfully')
-
-elif(option == 'FOOD ACCESS (FFQ)'):
-    user_id = st.text_input('User Id')
-    unique_id = st.text_input('Unique Id')
-
-    if(st.button('Proceed')):
-        ref2 = db.reference("/Users/" + user_id +"/Questionnaires/" + unique_id + "/CollectedData/")
-        my_json = ref2.get()
-
-        with open('data.json', 'w') as json_file:
-            json.dump(my_json, json_file)
-
-        json_file = open("data.json")
-        dic = json.load(json_file)
-        print(dic)
-
-        arr = []
-
-        for item in dic:
-            arr.append(dic[item])
-
-        jsonString = json.dumps(arr)
-
-        df = pd.read_json(jsonString)
-        aaaa = convert_df(df)
-
-        file_name = 'Qdata'+'('+unique_id+').csv'
-
-        if(st.download_button(
-            label="Download CSV File",
-            data=aaaa,
-            file_name=file_name,
-            mime='text/csv',
-        )):
-                st.success('Downloaded Successfully')
-
-elif(option == 'FOOD ACCESS (24HOURS RECALL)'):
-    user_id = st.text_input('User Id')
-    unique_id = st.text_input('Unique Id')
-
-    if(st.button('Proceed')):
-        ref2 = db.reference("/Users/" + user_id +"/Questionnaires/" + unique_id + "/CollectedData/")
-        my_json = ref2.get()
-
-        with open('data.json', 'w') as json_file:
-            json.dump(my_json, json_file)
-
-        json_file = open("data.json")
-        dic = json.load(json_file)
-        print(dic)
-
-        arr = []
-
-        for item in dic:
-            arr.append(dic[item])
-
-        jsonString = json.dumps(arr)
-
-        df = pd.read_json(jsonString)
-        aaaa = convert_df(df)
-
-        file_name = 'Qdata'+'('+unique_id+').csv'
-
-        if(st.download_button(
-            label="Download CSV File",
-            data=aaaa,
-            file_name=file_name,
-            mime='text/csv',
-        )):
-                st.success('Downloaded Successfully')
-
-elif(option == 'DIETARY DIVERSITY OF WOMEN'):
-    user_id = st.text_input('User Id')
-    unique_id = st.text_input('Unique Id')
-
-    if(st.button('Proceed')):
-        ref2 = db.reference("/Users/" + user_id +"/Questionnaires/" + unique_id + "/CollectedData/")
-        my_json = ref2.get()
-
-        with open('data.json', 'w') as json_file:
-            json.dump(my_json, json_file)
-
-        json_file = open("data.json")
-        dic = json.load(json_file)
-        print(dic)
-
-        arr = []
-
-        for item in dic:
-            arr.append(dic[item])
-
-        jsonString = json.dumps(arr)
-
-        df = pd.read_json(jsonString)
-        aaaa = convert_df(df)
-
-        file_name = 'Qdata'+'('+unique_id+').csv'
-
-        if(st.download_button(
-            label="Download CSV File",
-            data=aaaa,
-            file_name=file_name,
-            mime='text/csv',
-        )):
-                st.success('Downloaded Successfully')
-    
-elif(option == 'ANTHROPOMETRIC STATUS OF SUBJECTS RESPONDENTS'):
-    user_id = st.text_input('User Id')
-    unique_id = st.text_input('Unique Id')
-
-    if(st.button('Proceed')):
-        ref2 = db.reference("/Users/" + user_id +"/Questionnaires/" + unique_id + "/CollectedData/")
-        my_json = ref2.get()
-
-        with open('data.json', 'w') as json_file:
-            json.dump(my_json, json_file)
-
-        json_file = open("data.json")
-        dic = json.load(json_file)
-        print(dic)
-
-        arr = []
-
-        for item in dic:
-            arr.append(dic[item])
-
-        jsonString = json.dumps(arr)
-
-        df = pd.read_json(jsonString)
-        aaaa = convert_df(df)
-
-        file_name = 'Qdata'+'('+unique_id+').csv'
-
-        if(st.download_button(
-            label="Download CSV File",
-            data=aaaa,
-            file_name=file_name,
-            mime='text/csv',
-        )):
-                st.success('Downloaded Successfully')
+    except:
+        st.info('Upload Dataset')
