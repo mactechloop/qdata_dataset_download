@@ -160,8 +160,8 @@ elif(option == 'ANY OTHER'):
                 st.success('Downloaded Successfully')
 
 elif option == 'REPLACE ALPHABETS':
-    uploadedFile = st.file_uploader('datasetqdata', type=['csv','xlsx'],accept_multiple_files=False,key="fileUploader")
     try:
+        uploadedFile = st.file_uploader('datasetqdata', type=['csv','xlsx'],accept_multiple_files=False,key="fileUploader")
         try:
             df=pd.read_csv(uploadedFile, error_bad_lines=True, warn_bad_lines=False)
         except:
