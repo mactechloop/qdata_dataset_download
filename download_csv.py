@@ -11,12 +11,7 @@ from pathlib import Path
 downloads_path = str(Path.home() / "Downloads")
 
 @st.cache
-def convert_df(df):
-    # IMPORTANT: Cache the conversion to prevent computation on every rerun
-    return df.to_csv(index=False).encode('utf-8')
-
-@st.cache
-def convert_df1(df, ftr):
+def convert_df(df, ftr):
     # IMPORTANT: Cache the conversion to prevent computation on every rerun
     df.replace(ftr, inplace=True)
     return df.to_csv(index=False).encode('utf-8')
@@ -41,7 +36,7 @@ st.title('Download Dataset Qdata')
 
 
 
-activities=['SENSORY EVALUATION', 'ANY OTHER', 'REPLACE ALPHABETS']
+activities=['SENSORY EVALUATION', 'ANY OTHER']
 option=st.selectbox('Selection option:',activities)
 
 if(option == 'SENSORY EVALUATION'):
@@ -110,8 +105,16 @@ if(option == 'SENSORY EVALUATION'):
         my_df['Texture'] = tx
 
         # my_df.to_csv('data.csv', index=False, index_label=False)
+        ftr = {
+            'A' : 1,
+            'B' : 2,
+            'C' : 3,
+            'D' : 4,
+            'E' : 5,
+            'F' : 6
+        }
+        aaaa = convert_df(my_df, ftr)
 
-        aaaa = convert_df(my_df)
         file_name = 'Qdata'+'('+unique_id+').csv'
 
         if(st.download_button(
@@ -147,7 +150,15 @@ elif(option == 'ANY OTHER'):
         jsonString = json.dumps(arr)
 
         df = pd.read_json(jsonString)
-        aaaa = convert_df(df)
+        ftr = {
+            'A' : 1,
+            'B' : 2,
+            'C' : 3,
+            'D' : 4,
+            'E' : 5,
+            'F' : 6
+        }
+        aaaa = convert_df(df, ftr)
 
         file_name = 'Qdata'+'('+unique_id+').csv'
 
@@ -170,6 +181,7 @@ elif option == 'REPLACE ALPHABETS':
             except:      
                 df=pd.DataFrame()
 
+       
         ftr = {
             'A' : 1,
             'B' : 2,
@@ -178,8 +190,7 @@ elif option == 'REPLACE ALPHABETS':
             'E' : 5,
             'F' : 6
         }
-
-        aa = convert_df1(df, ftr)
+        aa = convert_df(df, ftr)
         # aa.replace(ftr, inplace=True)
 
         file_name = 'Qdata'+'('+uploadedFile.name[:-4].strip()+').csv'
